@@ -1,0 +1,19 @@
+{
+    "name": "techdivision/storage",
+    "type": "package",
+    "description": "Generic storage package implementation.",
+    "homepage": "https://github.com/techdivision/TechDivision_Storage",
+    "license": ["OSL-3.0"],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/techdivision/TechDivision_Storage"
+        }
+    ],
+    "require": {
+        "php" : ">=5.4.0"
+    },
+    "autoload": {
+        "psr-0": {"TechDivision": "src/"}
+    }
+}
