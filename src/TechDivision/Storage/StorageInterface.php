@@ -145,4 +145,23 @@ interface StorageInterface
      * @return object The storage object itself
      */
     public function getStorage();
+    
+    /**
+     * Adds an server to the internal list with servers this storage
+     * is bound to, used by MemcachedStorage for example.
+     * 
+     * @param string  $host   The server host
+     * @param integer $port   The server port
+     * @param integer $weight The weight the server has
+     * 
+     * @return void
+     */
+    public function addServer($host, $port, $weight);
+    
+    /**
+     * Returns the list with servers this storage is bound to.
+     * 
+     * @return array The server list
+     */
+    public function getServers();
 }
