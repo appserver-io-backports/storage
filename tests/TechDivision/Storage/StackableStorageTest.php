@@ -48,7 +48,7 @@ class StackableStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->storage = new StackableStorage(new GenericStorage());
+        $this->storage = new StackableStorage(new GenericStackable());
     }
     
     /**
@@ -56,8 +56,9 @@ class StackableStorageTest extends \PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testGet()
+    public function testGetAndSet()
     {
-        
+        $this->storage->set('key', $value = 'A value');
+        $this->assertSame($value, $this->storage->get('key'));
     }
 }

@@ -18,7 +18,7 @@
  * @link      http://www.appserver.io
  */
 
-namespace TechDivision\ServletEngine;
+namespace TechDivision\Storage;
 
 /**
  * A abstract storage implementation.
@@ -30,7 +30,7 @@ namespace TechDivision\ServletEngine;
  * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  * @link      http://www.appserver.io
  */
-abstract class AbstractStorage implements SessionStorage
+abstract class AbstractStorage implements StorageInterface
 {
 
     /**
@@ -39,6 +39,13 @@ abstract class AbstractStorage implements SessionStorage
      * @var mixed
      */
     protected $storage;
+
+    /**
+     * Unique identifier for the cache storage.
+     *
+     * @var string
+     */
+    protected $identifier;
 
     /**
      * Passes the configuration and initializes the storage.
