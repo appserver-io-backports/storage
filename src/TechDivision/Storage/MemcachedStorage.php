@@ -47,8 +47,9 @@ class MemcachedStorage extends AbstractStorage
         $serverList = $this->storage->getServerList();
         if (empty($serverList)) {
             $this->storage->setOption(\Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
-            foreach ($this->getStorageNode()->getServers() as $server) {
-                $this->storage->addServer($server->getAddress(), $server->getPort(), $server->getWeight());
+            foreach ($this->getServers() as $server) {
+                list ($host, $port, $weight) = $server;
+                $this->storage->addServer($host, $port, $weight);
             }
         }
     }

@@ -46,6 +46,13 @@ abstract class AbstractStorage implements StorageInterface
      * @var string
      */
     protected $identifier;
+    
+    /**
+     * Array that contains servers the storage is bound to.
+     *  
+     * @var array
+     */
+    protected $servers = array();
 
     /**
      * Passes the configuration and initializes the storage.
@@ -64,6 +71,33 @@ abstract class AbstractStorage implements StorageInterface
         if ($identifier != null) {
             $this->identifier = $identifier;
         }
+    }
+    
+    /**
+     * Adds an server to the internal list with servers this storage
+     * is bound to, used by MemcachedStorage for example.
+     * 
+     * @param string  $host   The server host
+     * @param integer $port   The server port
+     * @param integer $weight The weight the server has
+     * 
+     * @return void
+     * @see \TechDivision\Storage\StorageInterface::addServer()
+     */
+    public function addServer($host, $port, $weight)
+    {
+        $this->servers[] = array($host, $port, $weight);
+    }
+    
+    /**
+     * Returns the list with servers this storage is bound to.
+     * 
+     * @return array The server list
+     * @see \TechDivision\Storage\StorageInterface::getServers()
+     */
+    public function getServers()
+    {
+        return $this->servers;
     }
 
     /**
@@ -88,7 +122,7 @@ abstract class AbstractStorage implements StorageInterface
     /**
      * (non-PHPdoc)
      *
-     * @see \TechDivision\ApplicationServer\InitialContext\StorageInterface::getIdentifier()
+     * @see \TechDivision\Storage\StorageInterface::getIdentifier()
      * @return string The identifier for this cache
      */
     public function getIdentifier()
@@ -100,7 +134,7 @@ abstract class AbstractStorage implements StorageInterface
      * (non-PHPdoc)
      *
      * @return void
-     * @see \TechDivision\ApplicationServer\InitialContext\StorageInterface::collectGarbage()
+     * @see \TechDivision\Storage\StorageInterface::collectGarbage()
      */
     public function collectGarbage()
     {
@@ -113,7 +147,7 @@ abstract class AbstractStorage implements StorageInterface
      * @param string $tag The tag to search for
      *
      * @return array An array with the identifier (key) and content (value) of all matching entries. An empty array if no entries matched
-     * @see \TechDivision\ServletEngine\SessionStorage::getByTag()
+     * @see \TechDivision\Storage\StorageInterface::getByTag()
      */
     public function getByTag($tag)
     {
@@ -126,7 +160,7 @@ abstract class AbstractStorage implements StorageInterface
      * @param string $entryIdentifier An identifier specifying the cache entry
      *
      * @return boolean TRUE if such an entry exists, FALSE if not
-     * @see \TechDivision\ServletEngine\SessionStorage::has()
+     * @see \TechDivision\Storage\StorageInterface::has()
      */
     public function has($entryIdentifier)
     {
@@ -140,7 +174,7 @@ abstract class AbstractStorage implements StorageInterface
      * (non-PHPdoc)
      *
      * @return void
-     * @see \TechDivision\ServletEngine\SessionStorage::flush()
+     * @see \TechDivision\Storage\StorageInterface::flush()
      */
     public function flush()
     {
@@ -159,7 +193,7 @@ abstract class AbstractStorage implements StorageInterface
      * @param string $tag The tag the entries must have
      *
      * @return void
-     * @see \TechDivision\ServletEngine\SessionStorage::flushByTag()
+     * @see \TechDivision\Storage\StorageInterface::flushByTag()
      */
     public function flushByTag($tag)
     {
@@ -178,7 +212,7 @@ abstract class AbstractStorage implements StorageInterface
      * @param string $tag A tag to be checked for validity
      *
      * @return boolean
-     * @see \TechDivision\ServletEngine\SessionStorage::isValidTag()
+     * @see \TechDivision\Storage\StorageInterface::isValidTag()
      */
     public function isValidTag($tag)
     {
@@ -191,7 +225,7 @@ abstract class AbstractStorage implements StorageInterface
      * @param string $identifier An identifier to be checked for validity
      *
      * @return boolean
-     * @see \TechDivision\ServletEngine\SessionStorage::isValidEntryIdentifier()
+     * @see \TechDivision\Storage\StorageInterface::isValidEntryIdentifier()
      */
     public function isValidEntryIdentifier($identifier)
     {
@@ -205,7 +239,7 @@ abstract class AbstractStorage implements StorageInterface
      * (non-PHPdoc)
      *
      * @return object The storage object itself
-     * @see \TechDivision\ServletEngine\SessionStorage::getStorage()
+     * @see \TechDivision\Storage\StorageInterface::getStorage()
      */
     public function getStorage()
     {
