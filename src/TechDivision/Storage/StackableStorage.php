@@ -41,15 +41,16 @@ class StackableStorage extends AbstractStorage
     /**
      * Injects the \Stackable storage handler into the instance. 
      * 
-     * @param GenericStackable $storage    The stackable instance
-     * @param string           $identifier Unique identifier for the cache storage
+     * @param string $identifier Unique identifier for the cache storage
      * 
      * @return void
      */
-    public function __construct(GenericStackable $storage, $identifier = null)
+    public function __construct($identifier = null)
     {
-        // set the storage instance
-        $this->storage = $storage;
+        // inject the stackable storage
+        $this->injectStorage(new GenericStackable());
+        // initialize the stackable storage
+        $this->storage[__CLASS__] = __FILE__;
         // call the parent constructor to initialize + flush the storage
         parent::__construct($identifier);
     }
@@ -73,7 +74,7 @@ class StackableStorage extends AbstractStorage
      * @param array   $tags            Tags to associate with this cache entry
      * @param integer $lifetime        Lifetime of this cache entry in seconds. If NULL is specified,
      *                                 the default lifetime is used. "0" means unlimited lifetime.
-     *
+     *                                 
      * @return void
      *
      * @see \TechDivision\Storage\StorageInterface::set()
