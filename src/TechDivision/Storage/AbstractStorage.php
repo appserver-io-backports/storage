@@ -234,11 +234,23 @@ abstract class AbstractStorage implements StorageInterface
         }
         return false;
     }
+    
+    /**
+     * Injects the storage instance to use.
+     * 
+     * @param mixed $storage The storge instance to use
+     * 
+     * @return void
+     */
+    public function injectStorage($storage)
+    {
+        $this->storage = $storage;
+    }
 
     /**
      * (non-PHPdoc)
      *
-     * @return object The storage object itself
+     * @return mixed The storage object itself
      * @see \TechDivision\Storage\StorageInterface::getStorage()
      */
     public function getStorage()

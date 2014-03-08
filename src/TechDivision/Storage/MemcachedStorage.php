@@ -42,8 +42,9 @@ class MemcachedStorage extends AbstractStorage
      */
     public function init()
     {
-        // initialze the memcache servers
-        $this->storage = new \Memcached(__CLASS__);
+        // inject the \Memcached storage
+        $this->injectStorage(new \Memcached(__CLASS__));
+        // initialize the storage
         $serverList = $this->storage->getServerList();
         if (empty($serverList)) {
             $this->storage->setOption(\Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
