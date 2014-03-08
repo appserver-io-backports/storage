@@ -41,8 +41,7 @@ class StackableStorage extends AbstractStorage
     /**
      * Injects the \Stackable storage handler into the instance. 
      * 
-     * @param GenericStackable $storage    The stackable instance
-     * @param string           $identifier Unique identifier for the cache storage
+     * @param string $identifier Unique identifier for the cache storage
      * 
      * @return void
      */
@@ -75,6 +74,7 @@ class StackableStorage extends AbstractStorage
      * @param array   $tags            Tags to associate with this cache entry
      * @param integer $lifetime        Lifetime of this cache entry in seconds. If NULL is specified,
      *                                 the default lifetime is used. "0" means unlimited lifetime.
+     *                                 
      * @return void
      *
      * @see \TechDivision\Storage\StorageInterface::set()
