@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TechDivision\Storage\StackableStorageTest
+ * TechDivision\Storage\ArrayStorageTest
  *
  * NOTICE OF LICENSE
  *
@@ -31,13 +31,13 @@ namespace TechDivision\Storage;
  * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  * @link      http://www.appserver.io
  */
-class StackableStorageTest extends \PHPUnit_Framework_TestCase
+class ArrayStorageTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
      * The storage instance to test.
      *
-     * @var \TechDivision\Storage\StackableStorage
+     * @var \TechDivision\Storage\ArrayStorage
      */
     protected $storage;
 
@@ -48,7 +48,7 @@ class StackableStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->storage = new StackableStorage(md5(__CLASS__));
+        $this->storage = new ArrayStorage(md5(__CLASS__));
     }
 
     /**
