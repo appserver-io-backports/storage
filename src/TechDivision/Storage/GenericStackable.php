@@ -34,14 +34,4 @@ namespace TechDivision\Storage;
  */
 class GenericStackable extends \Stackable
 {
-
-    /**
-     * (non-PHPdoc)
-     *
-     * @return void
-     * @see \Stackable::run()
-     */
-    public function run()
-    {
-    }
 }

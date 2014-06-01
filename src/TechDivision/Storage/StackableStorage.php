@@ -24,7 +24,7 @@ namespace TechDivision\Storage;
 /**
  * A storage implementation that uses a \Stackable to hold the data persistent
  * in memory.
- * 
+ *
  * This storage will completely be flushed when the the object is destroyed,
  * there is no automatic persistence functionality available.
  *
@@ -35,33 +35,161 @@ namespace TechDivision\Storage;
  * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  * @link      http://www.appserver.io
  */
-class StackableStorage extends AbstractStorage
+class StackableStorage extends GenericStackable implements StorageInterface
 {
-    
+
     /**
-     * Injects the \Stackable storage handler into the instance. 
-     * 
+     * Passes the configuration and initializes the storage.
+     *
+     * The identifier will be set after the init() function has been invoked, so it'll overwrite the one
+     * specified in the configuration if set.
+     *
      * @param string $identifier Unique identifier for the cache storage
-     * 
+     *
      * @return void
      */
     public function __construct($identifier = null)
     {
-        // inject the stackable storage
-        $this->injectStorage(new GenericStackable());
-        // initialize the stackable storage
-        $this->storage[__CLASS__] = __FILE__;
-        // call the parent constructor to initialize + flush the storage
-        parent::__construct($identifier);
+        // flush the storage
+        $this->flush();
+        // set the identifier
+        $this->identifier = $identifier;
+    }
+
+    /**
+     * Adds an server to the internal list with servers this storage
+     * is bound to, used by MemcachedStorage for example.
+     *
+     * @param string  $host   The server host
+     * @param integer $port   The server port
+     * @param integer $weight The weight the server has
+     *
+     * @return void
+     * @see \TechDivision\Storage\StorageInterface::addServer()
+     */
+    public function addServer($host, $port, $weight)
+    {
+        $this->servers[] = array($host, $port, $weight);
+    }
+
+    /**
+     * Returns the list with servers this storage is bound to.
+     *
+     * @return array The server list
+     * @see \TechDivision\Storage\StorageInterface::getServers()
+     */
+    public function getServers()
+    {
+        return $this->servers;
+    }
+
+    /**
+     * (non-PHPdoc)
+     *
+     * @see \TechDivision\Storage\StorageInterface::getIdentifier()
+     * @return string The identifier for this cache
+     */
+    public function getIdentifier()
+    {
+        return $this->identifier;
     }
 
     /**
      * (non-PHPdoc)
      *
      * @return void
-     * @see \TechDivision\Storage\AbstractStorage::init()
+     * @see \TechDivision\Storage\StorageInterface::collectGarbage()
      */
-    public function init()
+    public function collectGarbage()
+    {
+        // nothing to do here, because gc is handled by memcache
+    }
+
+    /**
+     * (non-PHPdoc)
+     *
+     * @param string $tag The tag to search for
+     *
+     * @return array An array with the identifier (key) and content (value) of all matching entries. An empty array if no entries matched
+     * @see \TechDivision\Storage\StorageInterface::getByTag()
+     */
+    public function getByTag($tag)
+    {
+        return $this->get($this->getIdentifier() . $tag);
+    }
+
+    /**
+     * (non-PHPdoc)
+     *
+     * @return void
+     * @see \TechDivision\Storage\StorageInterface::flush()
+     */
+    public function flush()
+    {
+        if ($allKeys = $this->getAllKeys()) {
+            foreach ($allKeys as $key) {
+                if (substr_compare($key, $this->getIdentifier(), 0)) {
+                    $this->remove($key);
+                }
+            }
+        }
+    }
+
+    /**
+     * (non-PHPdoc)
+     *
+     * @param string $tag The tag the entries must have
+     *
+     * @return void
+     * @see \TechDivision\Storage\StorageInterface::flushByTag()
+     */
+    public function flushByTag($tag)
+    {
+        $tagData = $this->get($this->getIdentifier() . $tag);
+        if (is_array($tagData)) {
+            foreach ($tagData as $cacheKey) {
+                $this->remove($cacheKey);
+            }
+            $this->remove($this->getIdentifier() . $tag);
+        }
+    }
+
+    /**
+     * (non-PHPdoc)
+     *
+     * @param string $tag A tag to be checked for validity
+     *
+     * @return boolean
+     * @see \TechDivision\Storage\StorageInterface::isValidTag()
+     */
+    public function isValidTag($tag)
+    {
+        return $this->isValidEntryIdentifier($tag);
+    }
+
+    /**
+     * (non-PHPdoc)
+     *
+     * @param string $identifier An identifier to be checked for validity
+     *
+     * @return boolean
+     * @see \TechDivision\Storage\StorageInterface::isValidEntryIdentifier()
+     */
+    public function isValidEntryIdentifier($identifier)
+    {
+        if (preg_match('^[0-9A-Za-z_]+$', $identifier) === 1) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * (non-PHPdoc)
+     *
+     * @return mixed The storage object itself
+     * @see \TechDivision\Storage\StorageInterface::getStorage()
+     */
+    public function getStorage()
     {
         return;
     }
@@ -74,7 +202,7 @@ class StackableStorage extends AbstractStorage
      * @param array   $tags            Tags to associate with this cache entry
      * @param integer $lifetime        Lifetime of this cache entry in seconds. If NULL is specified,
      *                                 the default lifetime is used. "0" means unlimited lifetime.
-     *                                 
+     *
      * @return void
      *
      * @see \TechDivision\Storage\StorageInterface::set()
@@ -85,13 +213,13 @@ class StackableStorage extends AbstractStorage
         $cacheKey = $this->getIdentifier() . $entryIdentifier;
 
         // set the data in the storage
-        $this->storage->lock();
-        $this->storage[$cacheKey] = $data;
-        $this->storage->unlock();
-        
+        $this->lock();
+        $this[$cacheKey] = $data;
+        $this->unlock();
+
         // if tags has been set, tag the data additionally
         foreach ($tags as $tag) {
-            
+
             // assemble the tag data
             $tagData = $this->get($this->getIdentifier() . $tag);
             if (is_array($tagData) && in_array($cacheKey, $tagData, true) === true) {
@@ -99,15 +227,13 @@ class StackableStorage extends AbstractStorage
             } elseif (is_array($tagData) && in_array($cacheKey, $tagData, true) === false) {
                 $tagData[] = $cacheKey;
             } else {
-                $tagData = array(
-                    $cacheKey
-                );
+                $tagData = array($cacheKey);
             }
 
             // tag the data
-            $this->storage->lock();
-            $this->storage[$tag] = $tagData;
-            $this->storage->unlock();
+            $this->lock();
+            $this[$tag] = $tagData;
+            $this->unlock();
         }
     }
 
@@ -121,7 +247,11 @@ class StackableStorage extends AbstractStorage
      */
     public function get($entryIdentifier)
     {
-        return $this->storage[$entryIdentifier];
+        // create a unique cache key and add the passed value to the storage
+        $cacheKey = $this->getIdentifier() . $entryIdentifier;
+
+        // try to load the value from the array
+        return $this[$cacheKey];
     }
 
     /**
@@ -134,7 +264,7 @@ class StackableStorage extends AbstractStorage
      */
     public function has($entryIdentifier)
     {
-        return isset($this->storage[$this->getIdentifier() . $entryIdentifier]);
+        return isset($this[$this->getIdentifier() . $entryIdentifier]);
     }
 
     /**
@@ -148,9 +278,9 @@ class StackableStorage extends AbstractStorage
     public function remove($entryIdentifier)
     {
         if ($this->has($entryIdentifier)) {
-            $this->storage->lock();
-            unset($this->storage[$this->getIdentifier() . $entryIdentifier]);
-            $this->storage->unlock();
+            $this->lock();
+            unset($this[$this->getIdentifier() . $entryIdentifier]);
+            $this->unlock();
             return true;
         }
         return false;
@@ -165,7 +295,7 @@ class StackableStorage extends AbstractStorage
     public function getAllKeys()
     {
         $keys = array();
-        foreach ($this->storage as $key => $value) {
+        foreach ($this as $key => $value) {
             $keys[] = $key;
         }
         return $keys;
