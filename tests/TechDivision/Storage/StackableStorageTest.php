@@ -36,11 +36,11 @@ class StackableStorageTest extends \PHPUnit_Framework_TestCase
 
     /**
      * The storage instance to test.
-     * 
+     *
      * @var \TechDivision\Storage\StackableStorage
      */
     protected $storage;
-    
+
     /**
      * Initializes the storage instance to test.
      *
@@ -50,7 +50,7 @@ class StackableStorageTest extends \PHPUnit_Framework_TestCase
     {
         $this->storage = new StackableStorage();
     }
-    
+
     /**
      * Test if the default session name is returned correctly.
      *
