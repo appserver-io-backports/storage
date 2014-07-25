@@ -1,19 +1,43 @@
 {
-    "name": "techdivision/storage",
-    "description": "Generic storage package implementation.",
-    "homepage": "https://github.com/techdivision/TechDivision_Storage",
-    "license": ["OSL-3.0"],
-    "require": {
-        "php" : ">=5.4.0"
-    },
-    "autoload": {
-        "psr-0": {
-            "TechDivision\\Storage": [ "src/", "tests/" ]
-            }
-    },
-    "config":{
-        "github-oauth":{
-            "github.com":"604a3b5943228e434a5b52c2ba3cf72286d30db9"
+	"name" : "techdivision/storage",
+	"description" : "Generic storage package implementation.",
+	"homepage" : "https://github.com/techdivision/TechDivision_Storage",
+	"license" : "OSL-3.0",
+    "keywords" : [
+        "php",
+        "interface",
+        "storage"
+    ],
+    "authors" : [{
+            "name" : "Tim Wagner",
+            "email" : "tw@techdivision.com",
+            "homepage" : "http://www.techdivision.com",
+            "role" : "Developer"
         }
+    ],
+	"require" : {
+		"php" : ">=5.4.0"
+	},
+	"require-dev" : {
+		"phpunit/phpunit" : "3.7.*",
+		"appserver-io/build" : "0.1.*"
+	},
+	"autoload" : {
+		"psr-0" : {
+			"TechDivision\\Storage" : [
+				"src/",
+				"tests/"
+			]
+		}
+	},
+	"config" : {
+		"github-oauth" : {
+			"github.com" : "604a3b5943228e434a5b52c2ba3cf72286d30db9"
+		}
+	},
+    "support" : {
+        "email" : "t.wagner@techdivision.com",
+        "issues" : "https://github.com/techdivision/TechDivision_Storage/issues",
+        "source" : "https://github.com/techdivision/TechDivision_Storage"
     }
 }
