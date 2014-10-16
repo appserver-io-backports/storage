@@ -1,3 +1,13 @@
+# Version 0.5.10
+
+## Bugfixes
+
+* Refactoring AbstractStorage/StackableStorage to avoid PHPCPD errors
+
+## Features
+
+* None
+
 # Version 0.5.9
 
 ## Bugfixes
