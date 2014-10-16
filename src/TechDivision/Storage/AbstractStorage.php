@@ -34,6 +34,13 @@ abstract class AbstractStorage implements StorageInterface
 {
 
     /**
+     * Register the trait that provides basic storage functionality.
+     *
+     * @var \Trait
+     */
+    use StorageTrait;
+
+    /**
      * A storage backend, a \Stackable for example.
      *
      * @var mixed
@@ -41,25 +48,11 @@ abstract class AbstractStorage implements StorageInterface
     protected $storage;
 
     /**
-     * Unique identifier for the cache storage.
-     *
-     * @var string
-     */
-    protected $identifier;
-    
-    /**
-     * Array that contains servers the storage is bound to.
-     *  
-     * @var array
-     */
-    protected $servers = array();
-
-    /**
      * Passes the configuration and initializes the storage.
      *
      * The identifier will be set after the init() function has been invoked, so it'll overwrite the one
      * specified in the configuration if set.
-     * 
+     *
      * @param string $identifier Unique identifier for the cache storage
      *
      * @return void
@@ -71,33 +64,6 @@ abstract class AbstractStorage implements StorageInterface
         if ($identifier != null) {
             $this->identifier = $identifier;
         }
-    }
-    
-    /**
-     * Adds an server to the internal list with servers this storage
-     * is bound to, used by MemcachedStorage for example.
-     * 
-     * @param string  $host   The server host
-     * @param integer $port   The server port
-     * @param integer $weight The weight the server has
-     * 
-     * @return void
-     * @see \TechDivision\Storage\StorageInterface::addServer()
-     */
-    public function addServer($host, $port, $weight)
-    {
-        $this->servers[] = array($host, $port, $weight);
-    }
-    
-    /**
-     * Returns the list with servers this storage is bound to.
-     * 
-     * @return array The server list
-     * @see \TechDivision\Storage\StorageInterface::getServers()
-     */
-    public function getServers()
-    {
-        return $this->servers;
     }
 
     /**
@@ -118,17 +84,6 @@ abstract class AbstractStorage implements StorageInterface
      * @return void
      */
     abstract public function init();
-
-    /**
-     * (non-PHPdoc)
-     *
-     * @see \TechDivision\Storage\StorageInterface::getIdentifier()
-     * @return string The identifier for this cache
-     */
-    public function getIdentifier()
-    {
-        return $this->identifier;
-    }
 
     /**
      * (non-PHPdoc)
@@ -171,75 +126,10 @@ abstract class AbstractStorage implements StorageInterface
     }
 
     /**
-     * (non-PHPdoc)
-     *
-     * @return void
-     * @see \TechDivision\Storage\StorageInterface::flush()
-     */
-    public function flush()
-    {
-        if ($allKeys = $this->getAllKeys()) {
-            foreach ($allKeys as $key) {
-                if (substr_compare($key, $this->getIdentifier(), 0)) {
-                    $this->remove($key);
-                }
-            }
-        }
-    }
-
-    /**
-     * (non-PHPdoc)
-     *
-     * @param string $tag The tag the entries must have
-     *
-     * @return void
-     * @see \TechDivision\Storage\StorageInterface::flushByTag()
-     */
-    public function flushByTag($tag)
-    {
-        $tagData = $this->get($this->getIdentifier() . $tag);
-        if (is_array($tagData)) {
-            foreach ($tagData as $cacheKey) {
-                $this->remove($cacheKey);
-            }
-            $this->remove($this->getIdentifier() . $tag);
-        }
-    }
-
-    /**
-     * (non-PHPdoc)
-     *
-     * @param string $tag A tag to be checked for validity
-     *
-     * @return boolean
-     * @see \TechDivision\Storage\StorageInterface::isValidTag()
-     */
-    public function isValidTag($tag)
-    {
-        return $this->isValidEntryIdentifier($tag);
-    }
-
-    /**
-     * (non-PHPdoc)
-     *
-     * @param string $identifier An identifier to be checked for validity
-     *
-     * @return boolean
-     * @see \TechDivision\Storage\StorageInterface::isValidEntryIdentifier()
-     */
-    public function isValidEntryIdentifier($identifier)
-    {
-        if (preg_match('^[0-9A-Za-z_]+$', $identifier) === 1) {
-            return true;
-        }
-        return false;
-    }
-    
-    /**
      * Injects the storage instance to use.
-     * 
+     *
      * @param mixed $storage The storge instance to use
-     * 
+     *
      * @return void
      */
     public function injectStorage($storage)
