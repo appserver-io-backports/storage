@@ -1,3 +1,13 @@
+# Version 0.5.11
+
+## Bugfixes
+
+* None
+
+## Features
+
+* Add test for GenericStackable class
+
 # Version 0.5.10
 
 ## Bugfixes
